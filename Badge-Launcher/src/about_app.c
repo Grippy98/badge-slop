@@ -1,0 +1,43 @@
+#include "about_app.h"
+
+static lv_obj_t *main_cont;
+
+static void about_enter(void) {
+  main_cont = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(main_cont, LV_PCT(100), LV_PCT(100));
+  lv_obj_set_style_bg_color(main_cont, lv_color_white(), 0);
+  lv_obj_set_scrollbar_mode(main_cont, LV_SCROLLBAR_MODE_OFF);
+  lv_obj_clear_flag(main_cont, LV_OBJ_FLAG_SCROLLABLE);
+
+  lv_obj_t *label = lv_label_create(main_cont);
+  lv_label_set_text(label,
+                    "In silicon valleys where logic runs deep,\n"
+                    "The BeagleBadge wakes from its digital sleep.\n"
+                    "With E-Ink display and a processor bright,\n"
+                    "It guides us through code in the soft glowing light.\n\n"
+                    "No ghosting remains, the scrolling is true,\n"
+                    "A badge built by hackers, for me and for you.\n\n"
+                    "(Press BACK to Return)");
+
+  lv_obj_set_width(label, LV_PCT(90));
+  lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
+  lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+  lv_obj_set_style_text_color(label, lv_color_black(), 0);
+  lv_obj_center(label);
+}
+
+static void about_update(void) {
+  // Back handling is done by global main loop now
+}
+
+static void about_exit(void) {
+  if (main_cont) {
+    lv_obj_del(main_cont);
+    main_cont = NULL;
+  }
+}
+
+App about_app = {.name = "About",
+                 .enter = about_enter,
+                 .update = about_update,
+                 .exit = about_exit};
