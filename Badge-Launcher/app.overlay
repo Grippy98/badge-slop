@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2024 BeagleBoard.org
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {
+	aliases {
+		btn-up = &btn_up;
+		btn-down = &btn_down;
+		btn-left = &btn_left;
+		btn-right = &btn_right;
+		btn-select = &btn_select;
+		btn-back = &btn_back;
+		led-red = &led_red_dummy;
+		led-green = &led_green_dummy;
+		led-blue = &led_blue_dummy;
+		buzzer = &buzzer;
+		i2c0 = &i2c0_gpio;
+		i2c1 = &i2c1_gpio;
+		i2c2 = &i2c2_gpio;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led_red_dummy: led_red_dummy {
+			gpios = <&main_gpio0_0 0 GPIO_ACTIVE_HIGH>;
+			label = "Dummy Red LED";
+		};
+		led_green_dummy: led_green_dummy {
+			gpios = <&main_gpio0_0 1 GPIO_ACTIVE_HIGH>;
+			label = "Dummy Green LED";
+		};
+		led_blue_dummy: led_blue_dummy {
+			gpios = <&main_gpio0_0 2 GPIO_ACTIVE_HIGH>;
+			label = "Dummy Blue LED";
+		};
+	};
+
+	buzzers {
+		compatible = "gpio-leds"; // Move this to PWM when that starts working
+
+		buzzer: buzzer_0 {
+			gpios = <&main_gpio0_0 29 GPIO_ACTIVE_HIGH>;
+			label = "Buzzer";
+		};
+	};
+
+
+	i2c0_gpio: i2c0_gpio {
+		compatible = "gpio-i2c";
+		status = "okay";
+		sda-gpios = <&main_gpio0_0 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&main_gpio0_0 5 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		clock-frequency = <100000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c1_gpio: i2c1_gpio {
+		compatible = "gpio-i2c";
+		status = "okay";
+		sda-gpios = <&main_gpio0_0 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&main_gpio0_0 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		clock-frequency = <100000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c2_gpio: i2c2_gpio {
+		compatible = "gpio-i2c";
+		status = "okay";
+		sda-gpios = <&main_gpio0_0 8 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&main_gpio0_0 9 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		clock-frequency = <100000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+};

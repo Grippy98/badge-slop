@@ -226,13 +226,16 @@ static void i2c_scanner_update(void) {
       GPIO_DT_SPEC_GET(DT_ALIAS(btn_left), gpios);
   static const struct gpio_dt_spec btn_right =
       GPIO_DT_SPEC_GET(DT_ALIAS(btn_right), gpios);
+  static const struct gpio_dt_spec btn_select =
+      GPIO_DT_SPEC_GET(DT_ALIAS(btn_select), gpios);
 
   // Debounce / Edge State
-  static int up_prev = 0, right_prev = 0, left_prev = 0;
+  static int up_prev = 0, right_prev = 0, left_prev = 0, select_prev = 0;
 
   int up = gpio_pin_get_dt(&btn_up);
   int right = gpio_pin_get_dt(&btn_right);
   int left = gpio_pin_get_dt(&btn_left);
+  int select = gpio_pin_get_dt(&btn_select);
   int64_t now = k_uptime_get();
 
   // Basic Debounce (ignore fast repeats)
@@ -240,6 +243,7 @@ static void i2c_scanner_update(void) {
     up_prev = up;
     right_prev = right;
     left_prev = left;
+    select_prev = select;
     return;
   }
 
@@ -263,8 +267,8 @@ static void i2c_scanner_update(void) {
     highlight_btn(btn_i2c1, selected_bus_index == 1);
     highlight_btn(btn_i2c2, selected_bus_index == 2);
 
-    // Confirm Selection - UP BUTTON
-    if (up && !up_prev) {
+    // Confirm Selection - UP or SELECT BUTTON
+    if ((up && !up_prev) || (select && !select_prev)) {
       current_state = STATE_SCANNING;
       last_action_time = now;
       scan_bus(selected_bus_index);
@@ -286,6 +290,7 @@ static void i2c_scanner_update(void) {
   up_prev = up;
   right_prev = right;
   left_prev = left;
+  select_prev = select;
 }
 
 static void i2c_scanner_exit(void) {

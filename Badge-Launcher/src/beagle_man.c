@@ -268,8 +268,8 @@ static void move_ghost_ai(void) {
 static void beagle_man_update(void) {
   int btn_up_curr = gpio_pin_get_dt(&btn_up);
 
-  // DOWN is BROKEN on hardware -> Use SELECT as DOWN
-  int btn_select_curr = gpio_pin_get_dt(&btn_select);
+  // Use real Down button
+  int btn_down_curr = gpio_pin_get_dt(&btn_down);
 
   int btn_left_curr = gpio_pin_get_dt(&btn_left);
   int btn_right_curr = gpio_pin_get_dt(&btn_right);
@@ -279,10 +279,11 @@ static void beagle_man_update(void) {
     player.next_dir_x = 0;
     player.next_dir_y = -1;
   }
-  if (btn_select_curr) {
+  if (btn_down_curr) {
     player.next_dir_x = 0;
     player.next_dir_y = 1;
-  } // Mapped Down
+  }
+  // Ignore Select for movement now
   if (btn_left_curr) {
     player.next_dir_x = -1;
     player.next_dir_y = 0;

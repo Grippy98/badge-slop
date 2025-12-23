@@ -22,6 +22,7 @@ static int ball_dx;
 static int ball_dy;
 static int score;
 static bool game_over;
+static bool waiting_to_start;
 static int64_t last_tick;
 
 typedef struct {
@@ -40,6 +41,7 @@ static lv_obj_t *grid_cells[COLS][ROWS]; // Static Grid
 
 // --- Input ---
 static int btn_up_prev = 0;
+static int btn_select_prev = 0;
 
 static void set_cell_color(int x, int y, lv_color_t color) {
   if (x >= 0 && x < COLS && y >= 0 && y < ROWS && grid_cells[x][y]) {
@@ -48,10 +50,13 @@ static void set_cell_color(int x, int y, lv_color_t color) {
 }
 
 static void render_game(void) {
-  // 1. Clear Grid (White)
+  // 1. Clear Grid (White) and Reset Shape
   for (int x = 0; x < COLS; x++) {
     for (int y = 0; y < ROWS; y++) {
-      set_cell_color(x, y, lv_color_white());
+      if (grid_cells[x][y]) {
+        lv_obj_set_style_bg_color(grid_cells[x][y], lv_color_white(), 0);
+        lv_obj_set_style_radius(grid_cells[x][y], 0, 0); // Reset to square
+      }
     }
   }
 
@@ -68,8 +73,12 @@ static void render_game(void) {
     }
   }
 
-  // 4. Ball
-  set_cell_color(ball_x, ball_y, lv_color_black());
+  // 4. Ball (Round)
+  if (ball_x >= 0 && ball_x < COLS && ball_y >= 0 && ball_y < ROWS &&
+      grid_cells[ball_x][ball_y]) {
+    lv_obj_set_style_bg_color(grid_cells[ball_x][ball_y], lv_color_black(), 0);
+    lv_obj_set_style_radius(grid_cells[ball_x][ball_y], LV_RADIUS_CIRCLE, 0);
+  }
 }
 
 static void reset_game(void) {
@@ -80,6 +89,7 @@ static void reset_game(void) {
   ball_dy = -1; // Start moving up
   score = 0;
   game_over = false;
+  waiting_to_start = true;
 
   // Reset Bricks (Rows 1-5)
   int idx = 0;
@@ -172,7 +182,31 @@ static void brick_breaker_update(void) {
   // --- Physics (Ball Logic) ---
   // Update ball every 150ms (Medium speed)
   static int64_t last_ball_tick = 0;
-  if (now - last_ball_tick > 150) {
+
+  // Select Button for Launch
+  int btn_select_curr = gpio_pin_get_dt(&btn_select);
+  if (waiting_to_start) {
+    // Ball follows paddle
+    ball_x = paddle_x;
+    ball_y = PADDLE_Y - 1;
+
+    if (btn_select_curr && !btn_select_prev) {
+      waiting_to_start = false;
+      play_beep_move(); // Sound effect for launch
+    }
+
+    // Still render to show paddle movement and ball following
+    // But don't throttle render too much if possible? The main loop is fast
+    // enough. Actually we need to call render_game() somewhere if paddle moves?
+    // render_game() is called inside the physics block usually.
+    // Let's call it here too if waiting.
+    if (now - last_ball_tick >
+        50) { // Render faster for smooth paddle/ball follow
+      render_game();
+      last_ball_tick = now;
+    }
+
+  } else if (now - last_ball_tick > 150) {
     last_ball_tick = now;
 
     int next_x = ball_x + ball_dx;
@@ -226,6 +260,7 @@ static void brick_breaker_update(void) {
 
     render_game();
   }
+  btn_select_prev = btn_select_curr;
 
   last_tick = now;
   btn_up_prev = btn_up_curr;

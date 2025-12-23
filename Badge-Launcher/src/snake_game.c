@@ -252,6 +252,7 @@ static void update_logic() {
 static void snake_enter(void) {
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), 0);
+  lv_obj_clear_flag(lv_scr_act(), LV_OBJ_FLAG_SCROLLABLE);
 
   snake_body_container = lv_obj_create(lv_scr_act());
   lv_obj_set_size(snake_body_container, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -259,6 +260,7 @@ static void snake_enter(void) {
   lv_obj_set_style_border_width(snake_body_container, 0, 0);
   lv_obj_align(snake_body_container, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_pad_all(snake_body_container, 0, 0);
+  lv_obj_clear_flag(snake_body_container, LV_OBJ_FLAG_SCROLLABLE);
 
   // Initialize Static Grid
   for (int x = 0; x < GRID_COLS; x++) {
@@ -343,7 +345,7 @@ static void snake_update(void) {
   prev_btn_select = curr_select;
 
   int64_t now = k_uptime_get();
-  if (now - last_tick > 500) {
+  if (now - last_tick > 100) {
     update_logic();
     last_tick = now;
   }
@@ -353,7 +355,7 @@ static void snake_exit(void) {
   // Cleanup happens via screen clean in main
 }
 
-App snake_game_app = {.name = "Snake Game",
+App snake_game_app = {.name = "Snake",
                       .enter = snake_enter,
                       .update = snake_update,
                       .exit = snake_exit};

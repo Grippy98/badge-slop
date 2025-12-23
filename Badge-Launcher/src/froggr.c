@@ -232,7 +232,7 @@ static void froggr_update(void) {
   static int btn_up_prev_fr = 0;
   static int btn_right_prev = 0;
   static int btn_left_prev = 0;
-  static int btn_select_prev = 0;
+  static int btn_down_prev = 0;
 
   if (game_over) {
     if (btn_up_curr && !btn_up_prev_fr) {
@@ -245,7 +245,7 @@ static void froggr_update(void) {
   // Input
   int btn_left_curr = gpio_pin_get_dt(&btn_left);
   int btn_right_curr = gpio_pin_get_dt(&btn_right);
-  int btn_select_curr = gpio_pin_get_dt(&btn_select); // DOWN
+  int btn_down_curr = gpio_pin_get_dt(&btn_down);
 
   bool moved = false;
 
@@ -256,7 +256,7 @@ static void froggr_update(void) {
       moved = true;
     }
   }
-  if (btn_select_curr && !btn_select_prev) {
+  if (btn_down_curr && !btn_down_prev) {
     if (player_y < ROWS - 1) {
       player_y++;
       score -= 5;
@@ -279,7 +279,7 @@ static void froggr_update(void) {
   btn_up_prev_fr = btn_up_curr;
   btn_left_prev = btn_left_curr;
   btn_right_prev = btn_right_curr;
-  btn_select_prev = btn_select_curr;
+  btn_down_prev = btn_down_curr;
 
   if (moved) {
     play_beep_move();

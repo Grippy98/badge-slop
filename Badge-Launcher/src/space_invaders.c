@@ -50,6 +50,7 @@ static lv_obj_t *grid_cells[COLS][ROWS]; // Static Grid
 
 // --- Input ---
 static int btn_up_prev = 0;
+static int btn_select_prev = 0;
 // Note: Left/Right are polled directly
 
 static void set_cell_color(int x, int y, lv_color_t color) {
@@ -185,8 +186,9 @@ static void space_invaders_update(void) {
       player_x++;
   }
 
-  // Fire Projectile (Rising Edge of UP)
-  if (btn_up_curr && !btn_up_prev) {
+  // Fire Projectile (Rising Edge of SELECT)
+  int btn_select_curr = gpio_pin_get_dt(&btn_select);
+  if (btn_select_curr && !btn_select_prev) {
     // Find empty projectile slot
     for (int i = 0; i < MAX_PROJECTILES; i++) {
       if (!projectiles[i].active) {
@@ -198,6 +200,7 @@ static void space_invaders_update(void) {
       }
     }
   }
+  btn_select_prev = btn_select_curr;
   btn_up_prev = btn_up_curr;
 
   // --- Game Logic (Throttled) ---

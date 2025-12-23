@@ -1,0 +1,83 @@
+diff --git a/boards/ti/am62l_badge/am62l_badge_am62l3_a53-pinctrl.dts b/boards/ti/am62l_badge/am62l_badge_am62l3_a53-pinctrl.dts
+index 7476f562809..a4e868200fc 100644
+--- a/boards/ti/am62l_badge/am62l_badge_am62l3_a53-pinctrl.dts
++++ b/boards/ti/am62l_badge/am62l_badge_am62l3_a53-pinctrl.dts
+@@ -38,4 +38,32 @@
+ 	mosi_pins_default: mosi-default-pins {
+ 		pinmux = <K3_PINMUX(0x01b0, PIN_OUTPUT, MUX_MODE_7)>; /* (B12) SPI0_D1.GPIO0_91 */
+ 	};
++
++	btn_down_pins_default: btn-down-default-pins {
++		pinmux = <K3_PINMUX(0x00e8, PIN_INPUT, MUX_MODE_7)>; /* (L19) GPMC0_AD19.GPIO0_42 */
++	};
++
++	btn_select_pins_default: btn-select-default-pins {
++		pinmux = <K3_PINMUX(0x00a4, PIN_INPUT, MUX_MODE_7)>; /* (H18) GPMC0_AD11.GPIO0_26 */
++	};
++
++	btn_up_pins_default: btn-up-default-pins {
++		pinmux = <K3_PINMUX(0x00c0, PIN_INPUT, MUX_MODE_7)>; /* (N19) GPMC0_ADVn_ALE  */
++	};
++
++	btn_left_pins_default: btn-left-default-pins {
++		pinmux = <K3_PINMUX(0x00b8, PIN_INPUT, MUX_MODE_7)>; /* (L21) GPMC0_CLK */
++	};
++
++	btn_right_pins_default: btn-right-default-pins {
++		pinmux = <K3_PINMUX(0x01c0, PIN_INPUT, MUX_MODE_7)>; /* (B13) UART0_RTSn  */
++	};
++
++	btn_back_pins_default: btn-back-default-pins {
++		pinmux = <K3_PINMUX(0x01e4, PIN_INPUT, MUX_MODE_7)>; /* (D16) EXT_REFCLK1  */
++	};
++
++	buzzer_pins_default: buzzer-default-pins {
++		pinmux = <K3_PINMUX(0x00b0, PIN_OUTPUT, MUX_MODE_7)>; /* (F22) GPMC0_AD14 */
++	};
+ };
+diff --git a/boards/ti/am62l_badge/am62l_badge_am62l3_a53.dts b/boards/ti/am62l_badge/am62l_badge_am62l3_a53.dts
+index d791017dec0..5a277706deb 100644
+--- a/boards/ti/am62l_badge/am62l_badge_am62l3_a53.dts
++++ b/boards/ti/am62l_badge/am62l_badge_am62l3_a53.dts
+@@ -65,8 +65,7 @@
+ 
+ 		btn_select: button-select {
+ 			label = "Button SELECT";
+-			gpios = <&main_gpio0 18 GPIO_ACTIVE_LOW>; // J23
+-//			gpios = <&main_gpio0 26 GPIO_ACTIVE_LOW>; // H18
++			gpios = <&main_gpio0 26 GPIO_ACTIVE_LOW>; // H18
+ 			zephyr,code = <INPUT_KEY_ENTER>;
+ 		};
+ 		
+@@ -200,20 +199,30 @@
+ 		    <&busy_pins_default>,
+ 		    <&clk_pins_default>,
+ 		    <&cs0_pins_default>,
+-		    <&mosi_pins_default>;
++		    <&mosi_pins_default>,
++		    <&btn_select_pins_default>,
++		    <&btn_left_pins_default>,
++		    <&buzzer_pins_default>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
+ &main_gpio0_1 {
++	pinctrl-0 = <&btn_down_pins_default>,
++		    <&btn_up_pins_default>;
++	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
+ &main_gpio0_2 {
++	pinctrl-0 = <&btn_right_pins_default>;
++	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
+ &main_gpio0_3 {
++	pinctrl-0 = <&btn_back_pins_default>;
++	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 

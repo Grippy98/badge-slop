@@ -16,6 +16,7 @@
 
 #include <zephyr/drivers/display.h>
 #include <zephyr/random/random.h>
+#include <zephyr/version.h>
 
 LOG_MODULE_REGISTER(badge_launcher);
 
@@ -108,19 +109,6 @@ static void mute_app_enter(void) {
   if (!is_muted) {
     play_beep_move();
   }
-}
-
-static void mute_app_update(void) {
-  // Immediately exit back to menu
-  extern App menu_app; // Forward declare if needed, or use logic
-  // Actually, main.c has access to menu_app if we declare it or use next_app
-  // hack. Wait, next_app is static. Accessing static variables from within
-  // functions in same file is fine. BUT we need `menu_app` which is defined
-  // later? No, `menu_app` is main logic... wait. `current_app` is set to
-  // `&menu_app` initially. We need to trigger exit.
-
-  // Better way: Create a dedicated `mute_app_update` that sets `next_app =
-  // &menu_app`.
 }
 
 // Forward declaration of menu_app for return logic
@@ -353,9 +341,15 @@ static void menu_enter(void) {
   lv_obj_set_style_text_font(title, &lv_font_montserrat_24, 0);
   lv_obj_set_style_text_color(title, lv_color_black(), 0);
 
+  // Zephyr Version
+  lv_obj_t *z_version = lv_label_create(left_panel);
+  lv_label_set_text(z_version, "Zephyr - " KERNEL_VERSION_STRING);
+  lv_obj_set_style_text_align(z_version, LV_TEXT_ALIGN_CENTER, 0);
+  lv_obj_set_style_text_font(z_version, &lv_font_montserrat_14, 0);
+
   // Version Text
   lv_obj_t *version = lv_label_create(left_panel);
-  lv_label_set_text(version, "Build - 122525");
+  lv_label_set_text(version, "Build - 122325");
   lv_obj_set_style_text_align(version, LV_TEXT_ALIGN_CENTER, 0);
   lv_obj_set_style_text_font(version, &lv_font_montserrat_14,
                              0); // Smaller font
@@ -417,19 +411,21 @@ static void menu_enter(void) {
 }
 
 static void menu_update(void) {
-  static int64_t last_repeat_time = 0;
+
   static int btn_up_prev = 0;
   static int btn_right_prev = 0;
   static int btn_back_prev = 0;
   static int btn_left_prev = 0;
-  // btn_down ignored per hardware issue
+  static int btn_down_prev = 0;
+  static int btn_select_prev = 0;
 
   int btn_up_curr = gpio_pin_get_dt(&btn_up);
   int btn_right_curr = gpio_pin_get_dt(&btn_right); // Select
   int btn_back_curr = gpio_pin_get_dt(&btn_back);
   int btn_left_curr = gpio_pin_get_dt(&btn_left);
+  int btn_down_curr = gpio_pin_get_dt(&btn_down);
+  int btn_select_curr = gpio_pin_get_dt(&btn_select);
 
-  int64_t now = k_uptime_get();
   bool action_taken = false;
   int current_max =
       (current_state == MENU_ROOT) ? NUM_CATEGORIES : current_list_count;
@@ -448,8 +444,23 @@ static void menu_update(void) {
     action_taken = true;
   }
 
+  // --- DOWN Button (Cycles Down/Wrap) ---
+  if (btn_down_curr && !btn_down_prev) {
+    LOG_INF("DOWN Pressed. Old Index: %d, Max: %d", selected_index,
+            current_max);
+    selected_index++;
+    if (selected_index >= current_max)
+      selected_index = 0; // Wrap to top
+    LOG_INF("New Index: %d", selected_index);
+    play_beep_move();
+
+    rebuild_menu_list();
+    action_taken = true;
+  }
+
   // --- RIGHT Button (Select/Enter) ---
-  if (btn_right_curr && !btn_right_prev) {
+  if ((btn_right_curr && !btn_right_prev) ||
+      (btn_select_curr && !btn_select_prev)) {
     play_beep_eat();
     if (current_state == MENU_ROOT) {
       // ENTER SUBMENU
@@ -503,6 +514,8 @@ static void menu_update(void) {
   btn_right_prev = btn_right_curr;
   btn_back_prev = btn_back_curr;
   btn_left_prev = btn_left_curr;
+  btn_down_prev = btn_down_curr;
+  btn_select_prev = btn_select_curr;
 
   if (action_taken || menu_needs_redraw) {
     menu_needs_redraw = false;
