@@ -33,4 +33,6 @@ void play_beep_move(void);
 void play_beep_eat(void);
 void play_beep_die(void);
 
+void return_to_menu(void);
+
 #endif

@@ -6,6 +6,7 @@
 #include "beaglegotchi.h"
 #include "brick_breaker.h"
 #include "button_test.h"
+#include "chip_tunez.h"
 #include "dvd_app.h"
 #include "froggr.h"
 #include "i2c_scanner_app.h"
@@ -13,6 +14,7 @@
 #include "shutdown_app.h"
 #include "snake_game.h"
 #include "space_invaders.h"
+#include "timer_app.h"
 
 #include <zephyr/drivers/display.h>
 #include <zephyr/random/random.h>
@@ -133,8 +135,9 @@ static App *apps_games[] = {
 #define NUM_GAMES 7
 
 // Apps
-static App *apps_apps[] = {&badge_mode_app, &dvd_app};
-#define NUM_APPS_CAT 2
+static App *apps_apps[] = {&badge_mode_app, &dvd_app, &chip_tunez_app,
+                           &timer_app};
+#define NUM_APPS_CAT 4
 
 // Tools
 static App *apps_tools[] = {&i2c_scanner_app, &button_test_app,
@@ -611,3 +614,5 @@ int main(void) {
   }
   return 0;
 }
+
+void return_to_menu(void) { next_app = &menu_app; }

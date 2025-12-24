@@ -24,6 +24,8 @@ target_sources(app PRIVATE
     src/froggr.c
     src/about_app.c
     src/serial_monitor.c
+    src/timer_app.c
+    src/chip_tunez.c
     src/assets/dvd/beagle.c
     src/assets/beaglegotchi/eating.c
     src/assets/beaglegotchi/hungry.c
