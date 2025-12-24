@@ -10,14 +10,16 @@ static void about_enter(void) {
   lv_obj_clear_flag(main_cont, LV_OBJ_FLAG_SCROLLABLE);
 
   lv_obj_t *label = lv_label_create(main_cont);
-  lv_label_set_text(label,
-                    "In silicon valleys where logic runs deep,\n"
-                    "The BeagleBadge wakes from its digital sleep.\n"
-                    "With E-Ink display and a processor bright,\n"
-                    "It guides us through code in the soft glowing light.\n\n"
-                    "No ghosting remains, the scrolling is true,\n"
-                    "A badge built by hackers, for me and for you.\n\n"
-                    "(Press BACK to Return)");
+  lv_label_set_text(
+      label,
+      "This badge is a labor of love by a diverse\n"
+      "team of engineers and makers.\n\n"
+      "Huge thanks to - in no particular order: \n\n"
+      "Andrei Aldea, Andrew Davis, Judith Mendez, Bryan Brattlof, Devarsh "
+      "Thakkar, Jonas Wood, Dhruva Gole, Yogesh Hegde, Sebin Francis, Soumya "
+      "Tripathy, Vignesh Raghavendra, Praneeth Bajjuri\n\n"
+      "And many others at Texas Instruments, BeagleBoard and Seeed Studio\n\n"
+      "(Press BACK to Return)");
 
   lv_obj_set_width(label, LV_PCT(90));
   lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
