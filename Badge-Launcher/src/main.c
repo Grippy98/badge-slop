@@ -7,6 +7,7 @@
 #include "brick_breaker.h"
 #include "button_test.h"
 #include "chip_tunez.h"
+#include "doom_app.h"
 #include "dvd_app.h"
 #include "froggr.h"
 #include "i2c_scanner_app.h"
@@ -131,8 +132,8 @@ App mute_app = {.name = mute_app_name,
 // Games
 static App *apps_games[] = {
     &beaglegotchi_app,  &snake_game_app, &beagle_run_app, &space_invaders_app,
-    &brick_breaker_app, &beagle_man_app, &froggr_app};
-#define NUM_GAMES 7
+    &brick_breaker_app, &beagle_man_app, &froggr_app,     &doom_app};
+#define NUM_GAMES 8
 
 // Apps
 static App *apps_apps[] = {&badge_mode_app, &dvd_app, &chip_tunez_app,
@@ -352,7 +353,7 @@ static void menu_enter(void) {
 
   // Version Text
   lv_obj_t *version = lv_label_create(left_panel);
-  lv_label_set_text(version, "Build - 122325");
+  lv_label_set_text(version, "Build - DOOM");
   lv_obj_set_style_text_align(version, LV_TEXT_ALIGN_CENTER, 0);
   lv_obj_set_style_text_font(version, &lv_font_montserrat_14,
                              0); // Smaller font
@@ -538,6 +539,7 @@ App menu_app = {.name = "Menu",
 
 int main(void) {
   /* Init Drivers */
+  printk("EARLY BOOT: Entering main()\n");
   gpio_pin_configure_dt(&btn_up, GPIO_INPUT);
   gpio_pin_configure_dt(&btn_down, GPIO_INPUT);
   gpio_pin_configure_dt(&btn_left, GPIO_INPUT);
