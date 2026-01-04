@@ -5,9 +5,13 @@ LOG_MODULE_DECLARE(badge_launcher);
 
 // Declare the converted image asset
 LV_IMG_DECLARE(badge_andrei);
+LV_IMG_DECLARE(sonia);
+LV_IMG_DECLARE(roland);
 
 // Array of badge images - extensible
 static const lv_img_dsc_t *badge_images[] = {
+    &sonia,
+    &roland,
     &badge_andrei,
 };
 #define NUM_BADGE_IMAGES (sizeof(badge_images) / sizeof(badge_images[0]))
@@ -39,6 +43,7 @@ static void badge_enter(void) {
   // Ensure solid white background
   lv_obj_set_style_bg_opa(lv_scr_act(), LV_OPA_COVER, 0);
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), 0);
+  lv_obj_set_scrollbar_mode(lv_scr_act(), LV_SCROLLBAR_MODE_OFF);
 
   // 1. Full Screen Image
   img_obj = lv_img_create(lv_scr_act());

@@ -58,12 +58,15 @@ static void dvd_enter(void) {
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_bg_opa(lv_scr_act(), LV_OPA_COVER, 0);
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_white(), 0);
+  lv_obj_set_scrollbar_mode(lv_scr_act(),
+                            LV_SCROLLBAR_MODE_OFF); // Disable scrollbar
 
   display_width = lv_disp_get_hor_res(NULL);
   display_height = lv_disp_get_ver_res(NULL);
 
   img = lv_img_create(lv_scr_act());
   // Start with default
+  current_sprite_index = 2; // Default to DVD
   update_sprite_dimensions();
 
   x = 0;
@@ -81,6 +84,13 @@ static void dvd_enter(void) {
   dy = 10;
 
   last_tick = k_uptime_get();
+
+  // Instructions Label
+  lv_obj_t *label = lv_label_create(lv_scr_act());
+  lv_label_set_text(label, "< > : Logo   ^ : Speed");
+  lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+  lv_obj_set_style_text_color(label, lv_color_black(), 0);
+  lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, -5);
 
   // Reset input state
   btn_left_prev = gpio_pin_get_dt(&btn_left);

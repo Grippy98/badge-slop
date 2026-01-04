@@ -14,6 +14,17 @@ target_sources(app PRIVATE
     src/assets/shutdown/qr.c
     src/assets/ti_logo.c
     src/assets/badge/badge_andrei.c
+    src/assets/badge/sonia.c
+    src/assets/badge/sonia.c
+    src/assets/badge/roland.c
+    src/assets/badge/tux155.c
+    src/photos_app.c
+    src/assets/photos/photo_1.c
+    src/assets/photos/photo_2.c
+    src/assets/photos/photo_3.c
+    src/assets/photos/photo_4.c
+    src/assets/photos/photo_5.c
+    src/assets/photos/photo_6.c
     src/badge_mode_app.c
     src/i2c_scanner_app.c
     src/shutdown_app.c

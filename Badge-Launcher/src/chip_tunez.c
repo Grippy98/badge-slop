@@ -715,16 +715,16 @@ static const Note song_rick[] = {
     {NOTE_A4, 400},
 };
 
-#define SONG_COUNT 9
+#define SONG_COUNT 6
 static const Song songs[SONG_COUNT] = {
     {"Imperial March", song_imperial, sizeof(song_imperial) / sizeof(Note)},
     {"Super Mario", song_mario, sizeof(song_mario) / sizeof(Note)},
     {"Nokia Tune", song_nokia, sizeof(song_nokia) / sizeof(Note)},
     {"Doom E1M1", song_doom, sizeof(song_doom) / sizeof(Note)},
-    {"Fur Elise", song_furelise, sizeof(song_furelise) / sizeof(Note)},
+    //{"Fur Elise", song_furelise, sizeof(song_furelise) / sizeof(Note)},
     {"Happy Birthday", song_birthday, sizeof(song_birthday) / sizeof(Note)},
-    {"Game of Thrones", song_got, sizeof(song_got) / sizeof(Note)},
-    {"Mii Channel", song_mii, sizeof(song_mii) / sizeof(Note)},
+    //{"Game of Thrones", song_got, sizeof(song_got) / sizeof(Note)},
+    //{"Mii Channel", song_mii, sizeof(song_mii) / sizeof(Note)},
     {"Rick Roll", song_rick, sizeof(song_rick) / sizeof(Note)},
 };
 

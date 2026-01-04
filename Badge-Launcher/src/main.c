@@ -8,12 +8,13 @@
 #include "button_test.h"
 #include "chip_tunez.h"
 #include "dvd_app.h"
-#include "froggr.h"
+#include "froggr.h" // Disabled in menu but include kept
 #include "i2c_scanner_app.h"
+#include "photos_app.h"
 #include "serial_monitor.h"
 #include "shutdown_app.h"
 #include "snake_game.h"
-#include "space_invaders.h"
+#include "space_invaders.h" // Disabled
 #include "timer_app.h"
 
 #include <zephyr/drivers/display.h>
@@ -130,13 +131,15 @@ App mute_app = {.name = mute_app_name,
 // --- Category Arrays ---
 // Games
 static App *apps_games[] = {
-    &beaglegotchi_app,  &snake_game_app, &beagle_run_app, &space_invaders_app,
-    &brick_breaker_app, &beagle_man_app, &froggr_app};
-#define NUM_GAMES 7
+    &beaglegotchi_app, &snake_game_app,
+    //&beagle_run_app, &space_invaders_app, // Disabled
+    &brick_breaker_app,
+    //&beagle_man_app, &froggr_app // Disabled
+};
+#define NUM_GAMES 3
 
-// Apps
-static App *apps_apps[] = {&badge_mode_app, &dvd_app, &chip_tunez_app,
-                           &timer_app};
+// Apps (Badge Mode moved to root)
+static App *apps_apps[] = {&dvd_app, &chip_tunez_app, &timer_app, &photos_app};
 #define NUM_APPS_CAT 4
 
 // Tools
@@ -148,9 +151,10 @@ static App *apps_tools[] = {&i2c_scanner_app, &button_test_app,
 static App *apps_settings[] = {&mute_app, &about_app, &shutdown_app};
 #define NUM_SETTINGS 3
 
-// Root Categories
-static const char *category_names[] = {"Apps", "Games", "Tools", "Settings"};
-#define NUM_CATEGORIES 4
+// Root Categories (Added Badge Mode)
+static const char *category_names[] = {"Badge Mode", "Apps", "Games", "Tools",
+                                       "Settings"};
+#define NUM_CATEGORIES 5
 
 // --- State ---
 typedef enum { MENU_ROOT, MENU_SUBMENU } MenuState;
@@ -328,14 +332,28 @@ static void menu_enter(void) {
                         LV_FLEX_ALIGN_CENTER);
   lv_obj_set_style_pad_all(left_panel, 10, 0);
 
-  // TI Logo / Beagle Logo (Random)
+  // TI Logo / Beagle Logo / Tux Logo (Random)
+  extern const lv_img_dsc_t tux155; // Extern declaration if not in header
+  // Better: LV_IMG_DECLARE(tux155);
+  // Wait, I should declare it at the top with others.
+  // But for now, let's keep it here or check top of file.
+  // Top of file has LV_IMG_DECLAREs. I should add it there first ideally.
+  // I'll assume I can add the declare at the top in a separate edit or just use
+  // extern here. Actually, replace_file_content can handle multiple chunks? No,
+  // I am using replace_file_content which is single chunk. I will just use
+  // LV_IMG_DECLARE(tux155); right before usage since it's valid C.
+
+  LV_IMG_DECLARE(tux155);
+
   lv_obj_t *logo = lv_img_create(left_panel);
-  if (sys_rand32_get() % 2 == 0) {
+  int rand_val = sys_rand32_get() % 3;
+  if (rand_val == 0) {
     lv_img_set_src(logo, &ti_logo);
-  } else {
+  } else if (rand_val == 1) {
     lv_img_set_src(logo, &beagle);
+  } else {
+    lv_img_set_src(logo, &tux155);
   }
-  // Assuming TI Logo is small enough? We'll see. If too big, layout adjusts.
 
   // Title Text (Wrapped)
   lv_obj_t *title = lv_label_create(left_panel);
@@ -352,7 +370,7 @@ static void menu_enter(void) {
 
   // Version Text
   lv_obj_t *version = lv_label_create(left_panel);
-  lv_label_set_text(version, "Build - 122325");
+  lv_label_set_text(version, "Build - 122525");
   lv_obj_set_style_text_align(version, LV_TEXT_ALIGN_CENTER, 0);
   lv_obj_set_style_text_font(version, &lv_font_montserrat_14,
                              0); // Smaller font
@@ -466,25 +484,31 @@ static void menu_update(void) {
       (btn_select_curr && !btn_select_prev)) {
     play_beep_eat();
     if (current_state == MENU_ROOT) {
-      // ENTER SUBMENU
-      selected_category_index = selected_index;
-      current_state = MENU_SUBMENU;
+      if (selected_index == 0) {
+        // Badge Mode
+        next_app = &badge_mode_app;
+        action_taken = true;
+      } else {
+        // ENTER SUBMENU
+        selected_category_index = selected_index;
+        current_state = MENU_SUBMENU;
 
-      if (selected_index == 0) { // Apps
-        current_app_list = apps_apps;
-        current_list_count = NUM_APPS_CAT;
-      } else if (selected_index == 1) { // Games
-        current_app_list = apps_games;
-        current_list_count = NUM_GAMES;
-      } else if (selected_index == 2) { // Tools
-        current_app_list = apps_tools;
-        current_list_count = NUM_TOOLS;
-      } else { // Settings
-        current_app_list = apps_settings;
-        current_list_count = NUM_SETTINGS;
+        if (selected_index == 1) { // Apps
+          current_app_list = apps_apps;
+          current_list_count = NUM_APPS_CAT;
+        } else if (selected_index == 2) { // Games
+          current_app_list = apps_games;
+          current_list_count = NUM_GAMES;
+        } else if (selected_index == 3) { // Tools
+          current_app_list = apps_tools;
+          current_list_count = NUM_TOOLS;
+        } else { // Settings
+          current_app_list = apps_settings;
+          current_list_count = NUM_SETTINGS;
+        }
+        selected_index = 0; // Reset for submenu
+        rebuild_menu_list();
       }
-      selected_index = 0; // Reset for submenu
-      rebuild_menu_list();
     } else {
       // Check for Special 'Actions' like Mute
       if (current_app_list[selected_index] == &mute_app) {
